@@ -1,0 +1,32 @@
+services:
+  portainer:
+    image: portainer/portainer-ce:lts
+    container_name: portainer
+    restart: unless-stopped
+    ports:
+      - "9443:9443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /mnt/NAS/server/data/portainer:/data
+
+  homepage:
+    image: ghcr.io/gethomepage/homepage:latest
+    container_name: homepage
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      HOMEPAGE_ALLOWED_HOSTS: "192.168.68.58:3000,localhost:3000"
+    volumes:
+      - /mnt/NAS/server/data/homepage:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  macbook-tracker:
+    build: /mnt/NAS/server/projects/macbook-tracker
+    container_name: macbook-tracker
+    restart: unless-stopped
+    env_file:
+      - /mnt/NAS/server/projects/macbook-tracker/.env
+    volumes:
+      - /mnt/NAS/server/logs/macbook-tracker:/app/logs
+      - /mnt/NAS/server/data/macbook-tracker:/app/data
